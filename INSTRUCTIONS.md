@@ -71,7 +71,3 @@ If you are having problems or need anything else, please let us know by
 This project is licensed with the [MIT license](LICENSE).
 
 --- 
-
-<p align="center">
-  Made with ❤️ by <a href="https://rviewer.io">Rviewer</a>
-</p>
