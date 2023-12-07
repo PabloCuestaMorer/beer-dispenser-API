@@ -1,0 +1,97 @@
+	plugins {
+		id 'org.springframework.boot' version '2.7.0'
+		id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+		id 'java'
+		id 'jacoco'
+	}
+
+	group = 'com.rviewer.skeletons'
+	version = '1.0.0'
+	sourceCompatibility = '17'
+
+	configurations {
+		compileOnly {
+			extendsFrom annotationProcessor
+		}
+	}
+
+	repositories {
+		mavenCentral()
+		maven { url 'https://repo.spring.io/milestone' }
+	}
+
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		implementation 'org.springframework.data:spring-data-commons'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+		compileOnly 'org.projectlombok:lombok'
+		developmentOnly 'org.springframework.boot:spring-boot-devtools'
+		testImplementation 'com.h2database:h2:2.1.212'
+		runtimeOnly 'org.postgresql:postgresql'
+		annotationProcessor 'org.projectlombok:lombok'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+
+	test {
+		testLogging {
+			events "PASSED", "SKIPPED", "FAILED"
+		}
+		ignoreFailures = true
+		finalizedBy jacocoTestReport
+	}
+
+	jacoco {
+		toolVersion = "0.8.8"
+		reportsDirectory = file("$buildDir/reports/jacoco")
+	}
+
+	jacocoTestReport {
+		dependsOn test
+		reports {
+			xml.required = 	true
+			html.required = true
+			csv.required = 	false
+		}
+	}
+
+	/*
+	************************************************************************************
+	************************ Task to obtain a clear test report ************************
+	************************************************************************************
+	*/
+	import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+	import org.gradle.api.tasks.testing.logging.TestLogEvent
+	tasks.withType(Test) {
+		testLogging {
+			events TestLogEvent.FAILED,
+					TestLogEvent.PASSED
+
+			exceptionFormat TestExceptionFormat.FULL
+			showExceptions true
+			showCauses true
+			showStackTraces true
+
+			debug {
+				events 	TestLogEvent.FAILED,
+						TestLogEvent.PASSED
+
+				exceptionFormat TestExceptionFormat.FULL
+			}
+			info.events = debug.events
+			info.exceptionFormat = debug.exceptionFormat
+
+			afterSuite { desc, result ->
+				if (!desc.parent) {
+					def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+					def startItem = '|  ', endItem = '  |'
+					def repeatLength = startItem.length() + output.length() + endItem.length()
+					println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+				}
+			}
+		}
+	}
