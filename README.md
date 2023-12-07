@@ -63,9 +63,3 @@ you expected!
 Remember that **there is no countdown**, so take your time and implement a solution that you are proud!
 
 --- 
-
-<p align="center">
-  If you have any feedback or problem, <a href="mailto:help@rviewer.io">let us know!</a> 🤘
-  <br><br>
-  Made with ❤️ by <a href="https://rviewer.io">Rviewer</a>
-</p>
